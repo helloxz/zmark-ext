@@ -2,7 +2,7 @@
 
 ## 技术栈
 
-WXT (浏览器扩展框架) + Vue 3 + Naive UI + pnpm + TypeScript
+WXT (浏览器扩展框架) + Vue 3 + Naive UI + Tailwind CSS + pnpm + TypeScript
 
 ## 命令
 
