@@ -1,0 +1,31 @@
+import { defineConfig } from 'wxt';
+import vue from '@vitejs/plugin-vue'
+import AutoImport from 'unplugin-auto-import/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
+
+// See https://wxt.dev/api/config.html
+export default defineConfig({
+  vite: () => ({
+    plugins: [
+      vue(),
+      AutoImport({
+        imports: [
+          'vue',
+          {
+            'naive-ui': [
+              'useDialog',
+              'useMessage',
+              'useNotification',
+              'useLoadingBar'
+            ]
+          }
+        ]
+      }),
+      Components({
+        resolvers: [NaiveUiResolver()]
+      })
+    ],
+  }),
+  modules: ['@wxt-dev/module-vue'],
+});
