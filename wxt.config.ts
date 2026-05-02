@@ -1,14 +1,16 @@
 import { defineConfig } from 'wxt';
-import vue from '@vitejs/plugin-vue'
+// import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
+import tailwindcss from '@tailwindcss/vite'
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   vite: () => ({
     plugins: [
-      vue(),
+      //vue(),
+      tailwindcss(),
       AutoImport({
         imports: [
           'vue',
