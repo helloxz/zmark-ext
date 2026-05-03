@@ -42,6 +42,12 @@ assets/               # 构建时处理的资源（通过 @/assets/ 引用）
 
 Naive UI 组件通过 `unplugin-vue-components` 按需自动解析，在模板中直接使用 `<n-button>`, `<n-modal>` 等，无需手动导入。
 
+### 图标约定
+
+- 项目统一使用 `@vicons/ionicons5` 作为图标库
+- 后续新增图标优先从 `@vicons/ionicons5` 中选择，避免混用其他图标库
+- 在 Vue / Naive UI 中按需导入对应图标组件使用
+
 ### 路径别名
 
 - `@/` → 项目根目录
