@@ -237,7 +237,7 @@ onMounted(() => {
 
 <template>
   <div class="flex h-[600px] w-[380px] flex-col overflow-hidden bg-slate-50 text-slate-900">
-    <header class="shrink-0 border-b border-slate-200 bg-white/95 px-4 pb-3 pt-4 backdrop-blur">
+    <header class="relative z-20 shrink-0 border-b border-slate-200 bg-white/95 px-4 pb-3 pt-4 backdrop-blur">
       <div class="flex items-center justify-between">
         <div>
           <div class="text-lg font-semibold tracking-[0.2em] text-slate-900">ZMark</div>
@@ -263,7 +263,7 @@ onMounted(() => {
       </div>
     </header>
 
-    <main class="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+    <main class="relative z-0 min-h-0 flex-1 overflow-y-auto px-3 py-3">
       <section>
         <div class="mb-3 flex items-center justify-between px-1">
           <div>

@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="rootRef" class="relative z-50">
+  <div ref="rootRef" class="relative z-50 isolate">
     <n-input
       v-model:value="keyword"
       clearable
