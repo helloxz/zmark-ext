@@ -37,6 +37,14 @@ const childCategoryLinkErrors = reactive<Record<number, string>>({});
 const selectedLinkIds = ref<number[]>([]);
 
 const selectedLinkIdSet = computed(() => new Set(selectedLinkIds.value));
+const selectedLinks = computed(() => {
+  const allLinks = [
+    ...Object.values(categoryLinks).flat(),
+    ...Object.values(childCategoryLinks).flat(),
+  ];
+
+  return allLinks.filter(link => selectedLinkIdSet.value.has(link.id));
+});
 
 function isExpanded(categoryId: number) {
   return expandedCategoryId.value === categoryId;
@@ -80,6 +88,23 @@ function isLinkSelected(linkId: number) {
 
 function openLink(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+async function openSelectedLinks() {
+  if (!selectedLinks.value.length) {
+    message.warning('请先选择要打开的链接');
+    return;
+  }
+
+  for (const link of selectedLinks.value) {
+    await browser.tabs.create({ url: link.url, active: false });
+  }
+}
+
+async function handleToolbarAction(actionKey: string) {
+  if (actionKey === 'open') {
+    await openSelectedLinks();
+  }
 }
 
 function toggleLinkSelection(linkId: number, checked: boolean) {
@@ -223,7 +248,8 @@ onMounted(() => {
             quaternary
             circle
             type="default"
-            :title="action.label"
+            :title="action.key === 'open' ? '打开选中' : action.label"
+            @click="handleToolbarAction(action.key)"
           >
             <template #icon>
               <n-icon :component="action.icon" size="18" />
@@ -242,10 +268,10 @@ onMounted(() => {
     </header>
 
     <main class="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-      <section class="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/80">
+      <section>
         <div class="mb-3 flex items-center justify-between px-1">
           <div>
-            <h1 class="text-sm font-semibold text-slate-900">全部分类</h1>
+            <h1 class="text-base font-semibold text-slate-900">书签分类</h1>
           </div>
         </div>
 
@@ -277,8 +303,8 @@ onMounted(() => {
           <div
             v-for="category in categories"
             :key="category.id"
-            class="overflow-hidden rounded-2xl border transition-colors"
-            :class="isExpanded(category.id) ? 'border-emerald-200 bg-emerald-50/70 shadow-sm' : 'border-slate-200 bg-slate-50/80'"
+            class="overflow-hidden rounded-2xl border bg-white transition-colors"
+            :class="isExpanded(category.id) ? 'border-emerald-200 bg-emerald-50/40 shadow-sm' : 'border-slate-200'"
           >
             <button
               type="button"
@@ -298,7 +324,7 @@ onMounted(() => {
               </div>
             </button>
 
-            <div v-if="isExpanded(category.id)" class="border-t border-white/80 bg-white/75 px-3 py-3">
+            <div v-if="isExpanded(category.id)" class="border-t border-slate-100 bg-slate-50/40 px-3 py-3">
               <div class="space-y-3">
                 <div v-if="category.children.length" class="space-y-2">
                   <button
