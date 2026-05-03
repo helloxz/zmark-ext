@@ -65,3 +65,48 @@ Naive UI 组件通过 `unplugin-vue-components` 按需自动解析，在模板�
 - `pnpm compile` 仅做类型检查，不产生输出，构建使用 `pnpm build`
 - content script 的 `matches` 模式在 `entrypoints/content.ts` 的 `defineContentScript` 中定义
 - 弹窗页面的 manifest 类型通过 `index.html` 中的 `<meta name="manifest.type">` 指定
+
+## 请求封装
+
+- 统一使用 `@/utils/request` 发起后端 API 请求
+- `request(path, options)` 会自动从 `WxtStorage` 读取 `BASE_URL` 和 `TOKEN`
+- `path` 传相对路径时会自动拼接为 `BASE_URL/path`，例如 `/api/v1/bookmarks`
+- `TOKEN` 存在时自动携带 `Authorization: Bearer xxx`，不存在时不携带
+- 请求超时时间固定为 `90s`
+- 默认要求鉴权；如果接口不需要 token，传 `auth: false`
+- 后端 HTTP 200 时，默认响应结构为 `{ code, msg, data }`
+- `request` 会在 `code !== 200` 时直接抛出 `Error(msg)`，成功时只返回 `data`
+- 如果需要拿到底层 `Response`，使用 `requestRaw`
+- 设置页中的“测试连接”不走 `request`，因为它必须基于用户当前表单值，而不是已保存到 `WxtStorage` 的值
+
+```ts
+import { request, requestRaw } from '@/utils/request';
+
+interface BookmarkItem {
+  id: number;
+  title: string;
+}
+
+const bookmarks = await request<BookmarkItem[]>('/api/v1/bookmarks');
+
+await request('/api/v1/sync', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ force: true }),
+});
+
+await request('/api/v1/login', {
+  method: 'POST',
+  auth: false,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ username, password }),
+});
+
+const response = await requestRaw('/api/v1/export', {
+  method: 'GET',
+});
+```

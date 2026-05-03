@@ -7,6 +7,10 @@ import tailwindcss from '@tailwindcss/vite'
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+  manifest: {
+    permissions: ['clipboardRead', 'storage'],
+    host_permissions: ['http://*/*', 'https://*/*'],
+  },
   vite: () => ({
     plugins: [
       //vue(),
