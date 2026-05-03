@@ -9,6 +9,7 @@ import {
   FolderOpenOutline,
 } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
+import Search from '@/components/Search.vue';
 import { request } from '@/utils/request';
 import type { CategoryApiItem, CategoryNode } from '@/utils/categories';
 import { mapCategory } from '@/utils/categories';
@@ -258,12 +259,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="mt-3">
-        <n-input
-          clearable
-          placeholder="搜索链接、分类、站点"
-          round
-          size="large"
-        />
+        <Search />
       </div>
     </header>
 
