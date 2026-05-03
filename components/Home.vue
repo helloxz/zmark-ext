@@ -28,6 +28,7 @@ const isLoading = ref(false);
 const errorMessage = ref('');
 const expandedCategoryId = ref<number | null>(null);
 const expandedChildCategoryId = ref<number | null>(null);
+const categoryScrollContainerRef = ref<HTMLElement | null>(null);
 const message = useMessage();
 const categoryLinks = reactive<Record<number, BookmarkLink[]>>({});
 const childCategoryLinks = reactive<Record<number, BookmarkLink[]>>({});
@@ -120,6 +121,27 @@ function toggleLinkSelection(linkId: number, checked: boolean) {
   selectedLinkIds.value = [...nextSelectedIds];
 }
 
+async function scrollExpandedCategoryIntoView(categoryId: number) {
+  await nextTick();
+
+  const container = categoryScrollContainerRef.value;
+  const categoryElement = container?.querySelector<HTMLElement>(`[data-category-id="${categoryId}"]`);
+
+  if (!container || !categoryElement) {
+    return;
+  }
+
+  const spacing = 12;
+  const containerRect = container.getBoundingClientRect();
+  const categoryRect = categoryElement.getBoundingClientRect();
+  const nextScrollTop = container.scrollTop + categoryRect.top - containerRect.top - spacing;
+
+  container.scrollTo({
+    top: Math.max(0, nextScrollTop),
+    behavior: 'smooth',
+  });
+}
+
 async function fetchCategoryLinks(categoryType: 'l1' | 'l2', categoryId: number) {
   const result = await request<LinkApiItem[]>(`/api/v1/category_links?category_type=${categoryType}&category_id=${categoryId}`);
 
@@ -174,6 +196,7 @@ async function toggleCategory(categoryId: number) {
 
   expandedCategoryId.value = categoryId;
   expandedChildCategoryId.value = null;
+  await scrollExpandedCategoryIntoView(categoryId);
   await ensureCategoryLinks(categoryId);
 }
 
@@ -263,7 +286,7 @@ onMounted(() => {
       </div>
     </header>
 
-    <main class="relative z-0 min-h-0 flex-1 overflow-y-auto px-3 py-3">
+    <main ref="categoryScrollContainerRef" class="relative z-0 min-h-0 flex-1 overflow-y-auto px-3 py-3">
       <section>
         <div class="mb-3 flex items-center justify-between px-1">
           <div>
@@ -299,6 +322,7 @@ onMounted(() => {
           <div
             v-for="category in categories"
             :key="category.id"
+            :data-category-id="category.id"
             class="overflow-hidden rounded-2xl border bg-white transition-colors"
             :class="isExpanded(category.id) ? 'border-emerald-200 bg-emerald-50/40 shadow-sm' : 'border-slate-200'"
           >
