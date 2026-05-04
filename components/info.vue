@@ -43,14 +43,14 @@ function closePanel() {
 </script>
 
 <template>
-  <div class="rounded-[28px] bg-white p-5 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
+  <div class="rounded-[28px] bg-white p-4 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
     <div class="flex items-start justify-between gap-4">
       <div>
         <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-100">
           <n-icon :component="InformationCircleOutline" size="14" />
           扩展信息
         </div>
-        <h2 class="mt-3 text-xl font-semibold tracking-tight text-slate-900">ZMark Extension</h2>
+        <h2 class="mt-2.5 text-lg font-semibold tracking-tight text-slate-900">ZMark Extension</h2>
       </div>
 
       <n-button quaternary circle type="default" title="关闭" @click="closePanel">
@@ -60,16 +60,16 @@ function closePanel() {
       </n-button>
     </div>
 
-    <div class="mt-5 rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[1px]">
-      <div class="rounded-[calc(1.5rem-1px)] bg-white/95 p-4 backdrop-blur">
+    <div class="mt-4 rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[1px]">
+      <div class="rounded-[calc(1.5rem-1px)] bg-white/95 p-3.5 backdrop-blur">
         <div class="flex items-center justify-between gap-3">
           <div>
             <div class="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">Version</div>
-            <div class="mt-1 text-2xl font-semibold text-slate-900">1.0.0</div>
+            <div class="mt-1 text-xl font-semibold text-slate-900">1.0.0</div>
           </div>
-          <n-button strong secondary type="warning" @click="openExternal('https://dwz.ovh/jtxo')">
+          <n-button strong secondary size="small" type="warning" @click="openExternal('https://dwz.ovh/jtxo')">
             <template #icon>
-              <n-icon :component="StarOutline" size="16" />
+              <n-icon :component="StarOutline" size="15" />
             </template>
             为扩展评分
           </n-button>
@@ -77,20 +77,20 @@ function closePanel() {
       </div>
     </div>
 
-    <div class="mt-4 space-y-3">
+    <div class="mt-3 space-y-2.5">
       <button
         v-for="item in infoLinks"
         :key="item.url"
         type="button"
-        class="group flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm"
+        class="group flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm"
         @click="openExternal(item.url)"
       >
-        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ring-1 ring-inset ring-white/60" :class="item.accentClass">
-          <n-icon :component="item.icon" size="20" />
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-inset ring-white/60" :class="item.accentClass">
+          <n-icon :component="item.icon" size="18" />
         </div>
         <div class="min-w-0 flex-1 text-sm font-semibold text-slate-800">{{ item.title }}</div>
         <div class="shrink-0 text-emerald-600 transition-transform group-hover:translate-x-0.5">
-          <n-icon :component="OpenOutline" size="16" />
+          <n-icon :component="OpenOutline" size="15" />
         </div>
       </button>
     </div>
