@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import {
-  AddOutline,
   OpenOutline,
   TrashOutline,
   ChevronDownOutline,
   ChevronForwardOutline,
   RefreshOutline,
   FolderOpenOutline,
+  GitMergeOutline,
+  InformationCircleOutline,
 } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
 import Search from '@/components/Search.vue';
@@ -18,9 +19,11 @@ import { getFaviconUrl, mapLink } from '@/utils/links';
 import { baseUrlStorage, categoryTreeStorage, tokenStorage } from '@/utils/storage';
 
 const toolbarActions = [
-  { key: 'add', label: '添加', icon: AddOutline },
-  { key: 'open', label: '打开', icon: OpenOutline },
-  { key: 'delete', label: '删除', icon: TrashOutline },
+  { key: 'open', label: '打开', title: '打开选中', icon: OpenOutline },
+  { key: 'refresh', label: '刷新', title: '刷新分类', icon: RefreshOutline },
+  { key: 'delete', label: '删除', title: '删除', icon: TrashOutline },
+  { key: 'deduplicate', label: '去重', title: '去重', icon: GitMergeOutline },
+  { key: 'info', label: '信息', title: '信息', icon: InformationCircleOutline },
 ];
 
 const categories = ref<CategoryNode[]>([]);
@@ -29,6 +32,7 @@ const errorMessage = ref('');
 const expandedCategoryId = ref<number | null>(null);
 const expandedChildCategoryId = ref<number | null>(null);
 const categoryScrollContainerRef = ref<HTMLElement | null>(null);
+const dialog = useDialog();
 const message = useMessage();
 const categoryLinks = reactive<Record<number, BookmarkLink[]>>({});
 const childCategoryLinks = reactive<Record<number, BookmarkLink[]>>({});
@@ -37,6 +41,14 @@ const loadingChildCategoryLinks = reactive<Record<number, boolean>>({});
 const categoryLinkErrors = reactive<Record<number, string>>({});
 const childCategoryLinkErrors = reactive<Record<number, string>>({});
 const selectedLinkIds = ref<number[]>([]);
+const isDeleting = ref(false);
+const isDeduplicating = ref(false);
+
+type RemoveDuplicateLinksResponse = {
+  deleted_count: number;
+  deleted_ids: number[];
+  kept_ids: number[];
+};
 
 const selectedLinkIdSet = computed(() => new Set(selectedLinkIds.value));
 const selectedLinks = computed(() => {
@@ -103,9 +115,171 @@ async function openSelectedLinks() {
   }
 }
 
+async function refreshExpandedLinks() {
+  const categoryId = expandedCategoryId.value;
+  const childCategoryId = expandedChildCategoryId.value;
+
+  if (categoryId !== null) {
+    loadingCategoryLinks[categoryId] = true;
+    categoryLinkErrors[categoryId] = '';
+
+    try {
+      categoryLinks[categoryId] = await fetchCategoryLinks('l1', categoryId);
+    } catch (error) {
+      categoryLinkErrors[categoryId] = error instanceof Error ? error.message : '链接加载失败';
+      message.error(categoryLinkErrors[categoryId]);
+    } finally {
+      loadingCategoryLinks[categoryId] = false;
+    }
+  }
+
+  if (childCategoryId !== null) {
+    loadingChildCategoryLinks[childCategoryId] = true;
+    childCategoryLinkErrors[childCategoryId] = '';
+
+    try {
+      childCategoryLinks[childCategoryId] = await fetchCategoryLinks('l2', childCategoryId);
+    } catch (error) {
+      childCategoryLinkErrors[childCategoryId] = error instanceof Error ? error.message : '链接加载失败';
+      message.error(childCategoryLinkErrors[childCategoryId]);
+    } finally {
+      loadingChildCategoryLinks[childCategoryId] = false;
+    }
+  }
+}
+
+function resetLinkCaches() {
+  for (const key of Object.keys(categoryLinks)) {
+    delete categoryLinks[Number(key)];
+  }
+
+  for (const key of Object.keys(childCategoryLinks)) {
+    delete childCategoryLinks[Number(key)];
+  }
+
+  for (const key of Object.keys(loadingCategoryLinks)) {
+    delete loadingCategoryLinks[Number(key)];
+  }
+
+  for (const key of Object.keys(loadingChildCategoryLinks)) {
+    delete loadingChildCategoryLinks[Number(key)];
+  }
+
+  for (const key of Object.keys(categoryLinkErrors)) {
+    delete categoryLinkErrors[Number(key)];
+  }
+
+  for (const key of Object.keys(childCategoryLinkErrors)) {
+    delete childCategoryLinkErrors[Number(key)];
+  }
+
+  selectedLinkIds.value = [];
+}
+
+function confirmDeleteSelectedLinks() {
+  if (!selectedLinks.value.length) {
+    message.warning('请先选择要删除的链接');
+    return;
+  }
+
+  if (isDeleting.value) {
+    return;
+  }
+
+  const ids = [...selectedLinkIds.value];
+  const count = ids.length;
+
+  dialog.warning({
+    title: '确认批量删除',
+    content: `确定要删除选中的 ${count} 个链接吗？删除后不可恢复。`,
+    positiveText: '确认删除',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      isDeleting.value = true;
+
+      try {
+        await request('/api/v1/delete_links', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ids }),
+        });
+
+        selectedLinkIds.value = selectedLinkIds.value.filter(linkId => !ids.includes(linkId));
+        await refreshExpandedLinks();
+        message.success(`已删除 ${count} 个链接`);
+      } catch (error) {
+        message.error(error instanceof Error ? error.message : '批量删除失败');
+        throw error;
+      } finally {
+        isDeleting.value = false;
+      }
+    },
+  });
+}
+
+function confirmDeduplicateLinks() {
+  if (isDeduplicating.value) {
+    return;
+  }
+
+  dialog.warning({
+    title: '确认去重',
+    content: '此操作将删除重复链接。',
+    positiveText: '确认去重',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      isDeduplicating.value = true;
+
+      try {
+        const result = await request<RemoveDuplicateLinksResponse>('/api/v1/remove_duplicate_links', {
+          method: 'POST',
+        });
+
+        if (!result.deleted_count) {
+          message.info('未发现重复链接');
+          return;
+        }
+
+        resetLinkCaches();
+        await loadCategories({ force: true });
+        message.success(`已删除 ${result.deleted_count} 个重复链接`);
+      } catch (error) {
+        message.error(error instanceof Error ? error.message : '去重失败');
+        throw error;
+      } finally {
+        isDeduplicating.value = false;
+      }
+    },
+  });
+}
+
 async function handleToolbarAction(actionKey: string) {
+  if (actionKey === 'refresh') {
+    await loadCategories({ force: true });
+    message.success('已刷新分类');
+    return;
+  }
+
+  if (actionKey === 'deduplicate') {
+    confirmDeduplicateLinks();
+    return;
+  }
+
+  if (actionKey === 'info') {
+    message.info('信息功能开发中');
+    return;
+  }
+
+  if (actionKey === 'delete') {
+    confirmDeleteSelectedLinks();
+    return;
+  }
+
   if (actionKey === 'open') {
     await openSelectedLinks();
+    return;
   }
 }
 
@@ -210,14 +384,14 @@ async function toggleChildCategory(categoryId: number) {
   await ensureChildCategoryLinks(categoryId);
 }
 
-async function loadCategories() {
+async function loadCategories(options?: { force?: boolean }) {
   isLoading.value = true;
   errorMessage.value = '';
 
   try {
     const cachedCategories = await categoryTreeStorage.getValue();
 
-    if (cachedCategories.length) {
+    if (!options?.force && cachedCategories.length) {
       categories.value = cachedCategories;
       expandedCategoryId.value = null;
       return;
@@ -244,13 +418,19 @@ async function loadCategories() {
     categories.value = mappedCategories;
     await categoryTreeStorage.setValue(mappedCategories);
     expandedCategoryId.value = null;
+    expandedChildCategoryId.value = null;
   } catch (error) {
     categories.value = [];
     expandedCategoryId.value = null;
+    expandedChildCategoryId.value = null;
     errorMessage.value = error instanceof Error ? error.message : '分类加载失败';
   } finally {
     isLoading.value = false;
   }
+}
+
+function reloadCategories() {
+  void loadCategories({ force: true });
 }
 
 onMounted(() => {
@@ -265,14 +445,16 @@ onMounted(() => {
         <div>
           <div class="text-lg font-semibold tracking-[0.2em] text-slate-900">ZMark</div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1">
           <n-button
             v-for="action in toolbarActions"
             :key="action.key"
             quaternary
             circle
             type="default"
-            :title="action.key === 'open' ? '打开选中' : action.label"
+            :title="action.title"
+            :disabled="(action.key === 'delete' && isDeleting) || (action.key === 'deduplicate' && isDeduplicating)"
+            :loading="(action.key === 'delete' && isDeleting) || (action.key === 'deduplicate' && isDeduplicating)"
             @click="handleToolbarAction(action.key)"
           >
             <template #icon>
@@ -305,7 +487,7 @@ onMounted(() => {
         <div v-else-if="errorMessage" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center">
           <div class="text-sm font-medium text-slate-700">分类暂时无法展示</div>
           <p class="mt-1 text-xs leading-5 text-slate-500">{{ errorMessage }}</p>
-          <n-button class="mt-4" secondary type="primary" @click="loadCategories">
+          <n-button class="mt-4" secondary type="primary" @click="reloadCategories">
             <template #icon>
               <n-icon :component="RefreshOutline" />
             </template>
