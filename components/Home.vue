@@ -10,6 +10,7 @@ import {
   InformationCircleOutline,
 } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
+import Info from '@/components/info.vue';
 import Search from '@/components/Search.vue';
 import { request } from '@/utils/request';
 import type { CategoryApiItem, CategoryNode } from '@/utils/categories';
@@ -43,6 +44,7 @@ const childCategoryLinkErrors = reactive<Record<number, string>>({});
 const selectedLinkIds = ref<number[]>([]);
 const isDeleting = ref(false);
 const isDeduplicating = ref(false);
+const showInfoModal = ref(false);
 
 type RemoveDuplicateLinksResponse = {
   deleted_count: number;
@@ -268,7 +270,7 @@ async function handleToolbarAction(actionKey: string) {
   }
 
   if (actionKey === 'info') {
-    message.info('信息功能开发中');
+    showInfoModal.value = true;
     return;
   }
 
@@ -632,6 +634,15 @@ onMounted(() => {
         </div>
       </section>
     </main>
+
+    <n-modal
+      v-model:show="showInfoModal"
+      class="mx-4 w-[calc(100%-2rem)] max-w-[360px] overflow-hidden rounded-[28px]"
+      :mask-closable="true"
+      :closable="false"
+    >
+      <Info @close="showInfoModal = false" />
+    </n-modal>
 
     <BottomNav class="shrink-0" />
   </div>
