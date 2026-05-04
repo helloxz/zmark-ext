@@ -508,7 +508,7 @@ onMounted(() => {
             :key="category.id"
             :data-category-id="category.id"
             class="overflow-hidden rounded-2xl border bg-white transition-colors"
-            :class="isExpanded(category.id) ? 'border-emerald-200 bg-emerald-50/40 shadow-sm' : 'border-slate-200'"
+            :class="isExpanded(category.id) ? 'border-sky-200 bg-sky-50/50 shadow-sm' : 'border-slate-200'"
           >
             <button
               type="button"
@@ -565,8 +565,8 @@ onMounted(() => {
                         <div
                           v-for="link in getChildCategoryLinks(child.id)"
                           :key="link.id"
-                          class="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-emerald-50/60"
-                          :class="isLinkSelected(link.id) ? 'bg-emerald-50/80' : 'bg-slate-50/80'"
+                          class="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-sky-50/70"
+                          :class="isLinkSelected(link.id) ? 'bg-sky-50/80' : 'bg-slate-50/80'"
                         >
                           <n-checkbox
                             :checked="isLinkSelected(link.id)"
@@ -576,7 +576,7 @@ onMounted(() => {
                           <img :src="getFaviconUrl(link.url)" :alt="link.title" class="h-4 w-4 shrink-0 rounded-sm" loading="lazy">
                           <button
                             type="button"
-                            class="min-w-0 flex-1 cursor-pointer truncate text-left text-sm font-medium text-slate-800 hover:text-emerald-600"
+                            class="min-w-0 flex-1 cursor-pointer truncate text-left text-sm font-medium text-slate-800 hover:text-sky-600"
                             @click.stop="openLink(link.url)"
                           >
                             {{ link.title }}
@@ -603,8 +603,8 @@ onMounted(() => {
                   <div
                     v-for="link in getCategoryLinks(category.id)"
                     :key="link.id"
-                    class="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-emerald-50/60"
-                    :class="isLinkSelected(link.id) ? 'bg-emerald-50/80' : 'bg-white'"
+                    class="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 transition-colors hover:bg-sky-50/70"
+                    :class="isLinkSelected(link.id) ? 'bg-sky-50/80' : 'bg-white'"
                   >
                     <n-checkbox
                       :checked="isLinkSelected(link.id)"
@@ -614,7 +614,7 @@ onMounted(() => {
                     <img :src="getFaviconUrl(link.url)" :alt="link.title" class="h-4 w-4 shrink-0 rounded-sm" loading="lazy">
                     <button
                       type="button"
-                      class="min-w-0 flex-1 cursor-pointer truncate text-left text-sm font-medium text-slate-800 hover:text-emerald-600"
+                      class="min-w-0 flex-1 cursor-pointer truncate text-left text-sm font-medium text-slate-800 hover:text-sky-600"
                       @click.stop="openLink(link.url)"
                     >
                       {{ link.title }}
