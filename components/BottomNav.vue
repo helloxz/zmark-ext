@@ -39,7 +39,7 @@ function navigate(item: NavItem) {
         <button
           type="button"
           class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs transition-colors"
-          :class="currentRouteName === item.key ? 'bg-emerald-50 text-emerald-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'"
+          :class="currentRouteName === item.key ? 'bg-sky-50 text-sky-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'"
           @click="navigate(item)"
         >
           <n-icon :component="item.icon" size="18" />
