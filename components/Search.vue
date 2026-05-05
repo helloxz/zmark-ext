@@ -5,7 +5,7 @@ import { getFaviconUrl, mapLink } from '@/utils/links';
 import { request } from '@/utils/request';
 
 const SEARCH_DELAY_MS = 300;
-const SEARCH_MIN_KEYWORD_LENGTH = 3;
+const SEARCH_MIN_KEYWORD_LENGTH = 2;
 const SEARCH_MAX_RESULTS = 10;
 
 const keyword = ref('');
