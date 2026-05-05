@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import {
+  HomeOutline,
   OpenOutline,
   TrashOutline,
   ChevronDownOutline,
@@ -19,7 +20,7 @@ import type { BookmarkLink, LinkApiItem } from '@/utils/links';
 import { getFaviconUrl, mapLink } from '@/utils/links';
 import { baseUrlStorage, categoryTreeStorage, tokenStorage } from '@/utils/storage';
 
-const toolbarActions = [
+const baseToolbarActions = [
   { key: 'open', label: '打开', title: '打开选中', icon: OpenOutline },
   { key: 'refresh', label: '刷新', title: '刷新分类', icon: RefreshOutline },
   { key: 'delete', label: '删除', title: '删除', icon: TrashOutline },
@@ -45,6 +46,18 @@ const selectedLinkIds = ref<number[]>([]);
 const isDeleting = ref(false);
 const isDeduplicating = ref(false);
 const showInfoModal = ref(false);
+const savedBaseUrl = ref('');
+
+const toolbarActions = computed(() => {
+  if (!savedBaseUrl.value.trim()) {
+    return baseToolbarActions;
+  }
+
+  return [
+    { key: 'home', label: '主页', title: '打开主页', icon: HomeOutline },
+    ...baseToolbarActions,
+  ];
+});
 
 type RemoveDuplicateLinksResponse = {
   deleted_count: number;
@@ -104,6 +117,14 @@ function isLinkSelected(linkId: number) {
 
 function openLink(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function openHomePage() {
+  if (!savedBaseUrl.value.trim()) {
+    return;
+  }
+
+  openLink(savedBaseUrl.value);
 }
 
 async function openSelectedLinks() {
@@ -258,6 +279,11 @@ function confirmDeduplicateLinks() {
 }
 
 async function handleToolbarAction(actionKey: string) {
+  if (actionKey === 'home') {
+    openHomePage();
+    return;
+  }
+
   if (actionKey === 'refresh') {
     await loadCategories({ force: true });
     message.success('已刷新分类');
@@ -435,7 +461,12 @@ function reloadCategories() {
   void loadCategories({ force: true });
 }
 
+async function loadSavedBaseUrl() {
+  savedBaseUrl.value = (await baseUrlStorage.getValue()).trim();
+}
+
 onMounted(() => {
+  void loadSavedBaseUrl();
   void loadCategories();
 });
 </script>
@@ -447,7 +478,7 @@ onMounted(() => {
         <div>
           <div class="text-lg font-semibold tracking-[0.2em] text-sky-700">ZMark</div>
         </div>
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-0.5">
           <n-button
             v-for="action in toolbarActions"
             :key="action.key"
