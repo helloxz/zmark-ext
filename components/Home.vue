@@ -445,7 +445,7 @@ onMounted(() => {
     <header class="relative z-20 shrink-0 border-b border-slate-200 bg-white/95 px-4 pb-3 pt-4 backdrop-blur">
       <div class="flex items-center justify-between">
         <div>
-          <div class="text-lg font-semibold tracking-[0.2em] text-slate-900">ZMark</div>
+          <div class="text-lg font-semibold tracking-[0.2em] text-sky-700">ZMark</div>
         </div>
         <div class="flex items-center gap-1">
           <n-button

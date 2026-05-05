@@ -17,7 +17,7 @@ const infoLinks: InfoLink[] = [
     title: 'ZMark 官网',
     url: 'https://www.zmark.app/',
     icon: GlobeOutline,
-    accentClass: 'from-emerald-500/15 to-teal-500/10 text-emerald-700',
+    accentClass: 'from-sky-500/15 to-cyan-500/10 text-sky-700',
   },
   {
     title: '帮助文档',
@@ -46,7 +46,7 @@ function closePanel() {
   <div class="rounded-[28px] bg-white p-4 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-100">
+        <div class="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700 ring-1 ring-sky-100">
           <n-icon :component="InformationCircleOutline" size="14" />
           扩展信息
         </div>
@@ -60,7 +60,7 @@ function closePanel() {
       </n-button>
     </div>
 
-    <div class="mt-4 rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[1px]">
+    <div class="mt-4 rounded-3xl bg-gradient-to-br from-sky-500 via-blue-500 to-cyan-500 p-[1px]">
       <div class="rounded-[calc(1.5rem-1px)] bg-white/95 p-3.5 backdrop-blur">
         <div class="flex items-center justify-between gap-3">
           <div>
@@ -89,7 +89,7 @@ function closePanel() {
           <n-icon :component="item.icon" size="18" />
         </div>
         <div class="min-w-0 flex-1 text-sm font-semibold text-slate-800">{{ item.title }}</div>
-        <div class="shrink-0 text-emerald-600 transition-transform group-hover:translate-x-0.5">
+        <div class="shrink-0 text-sky-600 transition-transform group-hover:translate-x-0.5">
           <n-icon :component="OpenOutline" size="15" />
         </div>
       </button>

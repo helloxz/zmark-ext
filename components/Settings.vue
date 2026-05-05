@@ -181,7 +181,7 @@ onMounted(() => {
         <section class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/80">
           <div class="mb-4">
             <h2 class="text-sm font-semibold text-slate-900">API信息</h2>
-            <p class="mt-1 text-xs text-slate-500">先填充设置页结构，后续再接真实保存逻辑。</p>
+            <p class="mt-1 text-xs text-slate-500">先点测试，通过后再点保存。</p>
           </div>
 
           <div class="space-y-3">
