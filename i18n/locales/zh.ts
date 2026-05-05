@@ -166,4 +166,9 @@ export default {
     "init.fill.all": "请填写完整信息",
     "init.failed": "初始化失败",
     "init.request.failed": "请求失败，请稍后重试",
+    "bookmark.links.load.failed": "链接加载失败",
+    "bookmark.links.delete.failed": "批量删除失败",
+    "bookmark.links.deduplicate.failed": "去重失败",
+    "bookmark.categories.load.failed": "分类加载失败",
+    "bookmark.links.add.failed": "添加链接失败",
 };

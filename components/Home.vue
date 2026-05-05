@@ -14,6 +14,7 @@ import BottomNav from '@/components/BottomNav.vue';
 import Info from '@/components/info.vue';
 import PopupLayout from '@/components/PopupLayout.vue';
 import Search from '@/components/Search.vue';
+import { t } from '@/i18n';
 import { request } from '@/utils/request';
 import type { CategoryApiItem, CategoryNode } from '@/utils/categories';
 import { mapCategory } from '@/utils/categories';
@@ -130,6 +131,10 @@ function openHomePage() {
   openLink(savedBaseUrl.value);
 }
 
+function getErrorMessage(error: unknown, fallbackKey: string) {
+  return error instanceof Error ? t(error.message) : t(fallbackKey);
+}
+
 async function openSelectedLinks() {
   if (!selectedLinks.value.length) {
     message.warning('请先选择要打开的链接');
@@ -152,7 +157,7 @@ async function refreshExpandedLinks() {
     try {
       categoryLinks[categoryId] = await fetchCategoryLinks('l1', categoryId);
     } catch (error) {
-      categoryLinkErrors[categoryId] = error instanceof Error ? error.message : '链接加载失败';
+      categoryLinkErrors[categoryId] = getErrorMessage(error, 'bookmark.links.load.failed');
       message.error(categoryLinkErrors[categoryId]);
     } finally {
       loadingCategoryLinks[categoryId] = false;
@@ -166,7 +171,7 @@ async function refreshExpandedLinks() {
     try {
       childCategoryLinks[childCategoryId] = await fetchCategoryLinks('l2', childCategoryId);
     } catch (error) {
-      childCategoryLinkErrors[childCategoryId] = error instanceof Error ? error.message : '链接加载失败';
+      childCategoryLinkErrors[childCategoryId] = getErrorMessage(error, 'bookmark.links.load.failed');
       message.error(childCategoryLinkErrors[childCategoryId]);
     } finally {
       loadingChildCategoryLinks[childCategoryId] = false;
@@ -236,7 +241,7 @@ function confirmDeleteSelectedLinks() {
         await refreshExpandedLinks();
         message.success(`已删除 ${count} 个链接`);
       } catch (error) {
-        message.error(error instanceof Error ? error.message : '批量删除失败');
+        message.error(getErrorMessage(error, 'bookmark.links.delete.failed'));
         throw error;
       } finally {
         isDeleting.value = false;
@@ -272,7 +277,7 @@ function confirmDeduplicateLinks() {
         await loadCategories({ force: true });
         message.success(`已删除 ${result.deleted_count} 个重复链接`);
       } catch (error) {
-        message.error(error instanceof Error ? error.message : '去重失败');
+        message.error(getErrorMessage(error, 'bookmark.links.deduplicate.failed'));
         throw error;
       } finally {
         isDeduplicating.value = false;
@@ -367,7 +372,7 @@ async function ensureCategoryLinks(categoryId: number) {
   try {
     categoryLinks[categoryId] = await fetchCategoryLinks('l1', categoryId);
   } catch (error) {
-    categoryLinkErrors[categoryId] = error instanceof Error ? error.message : '链接加载失败';
+    categoryLinkErrors[categoryId] = getErrorMessage(error, 'bookmark.links.load.failed');
     message.error(categoryLinkErrors[categoryId]);
   } finally {
     loadingCategoryLinks[categoryId] = false;
@@ -385,7 +390,7 @@ async function ensureChildCategoryLinks(categoryId: number) {
   try {
     childCategoryLinks[categoryId] = await fetchCategoryLinks('l2', categoryId);
   } catch (error) {
-    childCategoryLinkErrors[categoryId] = error instanceof Error ? error.message : '链接加载失败';
+    childCategoryLinkErrors[categoryId] = getErrorMessage(error, 'bookmark.links.load.failed');
     message.error(childCategoryLinkErrors[categoryId]);
   } finally {
     loadingChildCategoryLinks[categoryId] = false;
@@ -454,7 +459,7 @@ async function loadCategories(options?: { force?: boolean }) {
     categories.value = [];
     expandedCategoryId.value = null;
     expandedChildCategoryId.value = null;
-    errorMessage.value = error instanceof Error ? error.message : '分类加载失败';
+    errorMessage.value = getErrorMessage(error, 'bookmark.categories.load.failed');
   } finally {
     isLoading.value = false;
   }

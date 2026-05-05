@@ -2,6 +2,7 @@
 import BottomNav from '@/components/BottomNav.vue';
 import PopupLayout from '@/components/PopupLayout.vue';
 import PageTitle from '@/components/title.vue';
+import { t } from '@/i18n';
 import type { CategoryNode } from '@/utils/categories';
 import { request } from '@/utils/request';
 import { categoryTreeStorage } from '@/utils/storage';
@@ -81,6 +82,10 @@ const rules: FormRules = {
     },
   ],
 };
+
+function getErrorMessage(error: unknown, fallbackKey: string) {
+  return error instanceof Error ? t(error.message) : t(fallbackKey);
+}
 
 function handleParentCategoryChange(value: number | null) {
   formValue.parentCategoryId = value;
@@ -167,7 +172,7 @@ async function handleSubmit() {
 
     message.success('添加链接成功');
   } catch (error) {
-    message.error(error instanceof Error ? error.message : '添加链接失败');
+    message.error(getErrorMessage(error, 'bookmark.links.add.failed'));
   } finally {
     isSubmitting.value = false;
   }

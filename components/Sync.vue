@@ -3,6 +3,7 @@ import { CloudDownloadOutline, CloudUploadOutline } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
 import PopupLayout from '@/components/PopupLayout.vue';
 import PageTitle from '@/components/title.vue';
+import { t } from '@/i18n';
 import { mapBrowserBookmarksToZMark } from '@/utils/browser-bookmarks';
 import { syncZMarkToBrowser } from '@/utils/browser-sync';
 import { request } from '@/utils/request';
@@ -46,7 +47,7 @@ async function handleBrowserToZMarkSync() {
 
     message.success(`浏览器书签已同步到 ZMark，共导入 ${countImportedLinks(payload)} 条链接`);
   } catch (error) {
-    message.error(error instanceof Error ? error.message : '同步失败');
+    message.error(error instanceof Error ? t(error.message) : '同步失败');
   } finally {
     isBrowserToZMarkSyncing.value = false;
   }
