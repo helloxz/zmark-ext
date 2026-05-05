@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import BottomNav from '@/components/BottomNav.vue';
+import PopupLayout from '@/components/PopupLayout.vue';
 import PageTitle from '@/components/title.vue';
 import type { CategoryNode } from '@/utils/categories';
 import { request } from '@/utils/request';
@@ -212,7 +213,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-[600px] w-[380px] flex-col overflow-hidden bg-slate-50 text-slate-900">
+  <PopupLayout>
     <PageTitle title="添加书签" />
 
     <main class="min-h-0 flex-1 overflow-y-auto px-3 py-3">
@@ -273,5 +274,5 @@ onMounted(() => {
     </main>
 
     <BottomNav class="shrink-0" />
-  </div>
+  </PopupLayout>
 </template>

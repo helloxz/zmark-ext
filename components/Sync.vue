@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { CloudDownloadOutline, CloudUploadOutline } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
+import PopupLayout from '@/components/PopupLayout.vue';
 import PageTitle from '@/components/title.vue';
 import { mapBrowserBookmarksToZMark } from '@/utils/browser-bookmarks';
 import { syncZMarkToBrowser } from '@/utils/browser-sync';
@@ -66,7 +67,7 @@ async function handleZMarkToBrowserSync() {
 </script>
 
 <template>
-  <div class="flex h-[600px] w-[380px] flex-col overflow-hidden bg-slate-50 text-slate-900">
+  <PopupLayout>
     <PageTitle title="同步数据" />
 
     <main class="min-h-0 flex-1 overflow-y-auto px-3 py-3">
@@ -115,5 +116,5 @@ async function handleZMarkToBrowserSync() {
     </main>
 
     <BottomNav class="shrink-0" />
-  </div>
+  </PopupLayout>
 </template>

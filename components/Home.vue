@@ -12,6 +12,7 @@ import {
 } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
 import Info from '@/components/info.vue';
+import PopupLayout from '@/components/PopupLayout.vue';
 import Search from '@/components/Search.vue';
 import { request } from '@/utils/request';
 import type { CategoryApiItem, CategoryNode } from '@/utils/categories';
@@ -472,7 +473,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex h-[600px] w-[380px] flex-col overflow-hidden bg-slate-50 text-slate-900">
+  <PopupLayout>
     <header class="relative z-20 shrink-0 border-b border-slate-200 bg-white/95 px-4 pb-3 pt-4 backdrop-blur">
       <div class="flex items-center justify-between">
         <div>
@@ -676,5 +677,5 @@ onMounted(() => {
     </n-modal>
 
     <BottomNav class="shrink-0" />
-  </div>
+  </PopupLayout>
 </template>
