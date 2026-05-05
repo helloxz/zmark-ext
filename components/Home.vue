@@ -20,6 +20,7 @@ import { mapCategory } from '@/utils/categories';
 import type { BookmarkLink, LinkApiItem } from '@/utils/links';
 import { getFaviconUrl, mapLink } from '@/utils/links';
 import { baseUrlStorage, categoryTreeStorage, tokenStorage } from '@/utils/storage';
+import { useRouter } from 'vue-router';
 
 const baseToolbarActions = [
   { key: 'open', label: '打开', title: '打开选中', icon: OpenOutline },
@@ -37,6 +38,7 @@ const expandedChildCategoryId = ref<number | null>(null);
 const categoryScrollContainerRef = ref<HTMLElement | null>(null);
 const dialog = useDialog();
 const message = useMessage();
+const router = useRouter();
 const categoryLinks = reactive<Record<number, BookmarkLink[]>>({});
 const childCategoryLinks = reactive<Record<number, BookmarkLink[]>>({});
 const loadingCategoryLinks = reactive<Record<number, boolean>>({});
@@ -466,7 +468,23 @@ async function loadSavedBaseUrl() {
   savedBaseUrl.value = (await baseUrlStorage.getValue()).trim();
 }
 
+async function redirectToSettingsIfConfigMissing() {
+  try {
+    const [baseUrl, token] = await Promise.all([
+      baseUrlStorage.getValue(),
+      tokenStorage.getValue(),
+    ]);
+
+    if (!baseUrl.trim() || !token.trim()) {
+      await router.replace({ name: 'settings' });
+    }
+  } catch {
+    // Ignore storage read errors to avoid affecting existing Home behavior.
+  }
+}
+
 onMounted(() => {
+  void redirectToSettingsIfConfigMissing();
   void loadSavedBaseUrl();
   void loadCategories();
 });
