@@ -34,4 +34,5 @@ const i18n = createI18n({
   fallbackWarn: false
 })
 
+export const t = i18n.global.t
 export default i18n

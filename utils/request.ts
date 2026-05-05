@@ -1,4 +1,5 @@
 import { baseUrlStorage, tokenStorage } from '@/utils/storage';
+import { t } from '@/i18n';
 
 const REQUEST_TIMEOUT_MS = 90_000;
 
@@ -75,7 +76,7 @@ export async function request<T = unknown>(path: string, options: RequestOptions
   }
 
   if (result.code !== 200) {
-    throw new Error(result.msg || '请求失败');
+    throw new Error(result.msg ? t(result.msg) : '请求失败');
   }
 
   return result.data;
