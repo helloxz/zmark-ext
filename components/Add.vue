@@ -21,8 +21,8 @@ type LinkInfoResponse = {
 const message = useMessage();
 const formRef = ref<FormInst | null>(null);
 const isSubmitting = ref(false);
-const isInitializing = ref(false);
 const isRecognizing = ref(false);
+const hasLoadedCategories = ref(false);
 const categories = ref<CategoryNode[]>([]);
 const formValue = reactive({
   url: '',
@@ -116,20 +116,16 @@ async function loadCachedCategories() {
     }
   } catch {
     message.error('读取分类缓存失败');
+  } finally {
+    hasLoadedCategories.value = true;
   }
 }
 
 async function initializeForm() {
-  isInitializing.value = true;
-
-  try {
-    await Promise.all([
-      loadCurrentTab(),
-      loadCachedCategories(),
-    ]);
-  } finally {
-    isInitializing.value = false;
-  }
+  await Promise.all([
+    loadCurrentTab(),
+    loadCachedCategories(),
+  ]);
 }
 
 async function handleSubmit() {
@@ -222,12 +218,6 @@ onMounted(() => {
     <main class="min-h-0 flex-1 overflow-y-auto px-3 py-3">
       <div class="space-y-3">
         <section class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/80">
-          <div class="mb-4 flex items-center justify-end">
-            <n-tag v-if="isInitializing" size="small" round type="info" :bordered="false">
-              读取中
-            </n-tag>
-          </div>
-
           <n-form ref="formRef" :model="formValue" :rules="rules" label-placement="top" require-mark-placement="right-hanging">
             <n-form-item label="链接" path="url">
               <n-input v-model:value="formValue.url" placeholder="https://example.com" />
@@ -254,7 +244,7 @@ onMounted(() => {
                     clearable
                   />
                 </div>
-                <div v-if="!categories.length" class="mt-2 text-xs text-amber-600">
+                <div v-if="hasLoadedCategories && !categories.length" class="mt-2 text-xs text-amber-600">
                   分类缓存为空，请先回首页加载分类。
                 </div>
               </div>
