@@ -1,4 +1,4 @@
-import { ZMARK_BOOKMARKS_FOLDER_TITLE } from '@/utils/bookmark-sync-constants';
+import { ZMARK_BOOKMARKS_FOLDER_TITLE, BROWSER_ROOT_CATEGORY_NAMES } from '@/utils/bookmark-sync-constants';
 
 export type ZMarkLink = {
   title: string;
@@ -138,40 +138,77 @@ function collectTopLevelNode(parentCategory: MutableCategory, node: BookmarkNode
   collectFolderNodes(parentCategory, node, node.title);
 }
 
+function isBrowserRootCategory(title: string): boolean {
+  return BROWSER_ROOT_CATEGORY_NAMES.includes(title);
+}
+
 export function mapBrowserBookmarksToZMark(tree: BookmarkNode[]): ZMarkBookmarksPayload {
   const categories: MutableCategory[] = [];
   let defaultCategory: MutableCategory | null = null;
 
+  function ensureDefaultCategory(): MutableCategory {
+    if (!defaultCategory) {
+      defaultCategory = createCategory(DEFAULT_CATEGORY_NAME);
+      categories.push(defaultCategory);
+    }
+    return defaultCategory;
+  }
+
+  function addLinkToDefault(node: BookmarkNode) {
+    const dc = ensureDefaultCategory();
+    const link = createLink(node, dc.links.length);
+    if (link) {
+      dc.links.push(link);
+    }
+  }
+
+  function processCategoryChildren(category: MutableCategory, parentNode: BookmarkNode) {
+    for (const childNode of parentNode.children ?? []) {
+      if (!childNode.url && childNode.title === ZMARK_BOOKMARKS_FOLDER_TITLE) {
+        continue;
+      }
+      collectTopLevelNode(category, childNode);
+    }
+  }
+
+  function tryAddCategory(category: MutableCategory) {
+    if (category.links.length || category.children.some(child => child.links.length > 0)) {
+      categories.push(category);
+    }
+  }
+
   for (const rootNode of tree) {
     for (const topLevelNode of rootNode.children ?? []) {
       if (topLevelNode.url) {
-        if (!defaultCategory) {
-          defaultCategory = createCategory(DEFAULT_CATEGORY_NAME);
-          categories.push(defaultCategory);
+        addLinkToDefault(topLevelNode);
+        continue;
+      }
+
+      if (isBrowserRootCategory(topLevelNode.title || '')) {
+        for (const childNode of topLevelNode.children ?? []) {
+          if (!childNode.url && childNode.title === ZMARK_BOOKMARKS_FOLDER_TITLE) {
+            continue;
+          }
+
+          if (childNode.url) {
+            addLinkToDefault(childNode);
+            continue;
+          }
+
+          if (!childNode.title) {
+            continue;
+          }
+
+          const category = createCategory(childNode.title);
+          processCategoryChildren(category, childNode);
+          tryAddCategory(category);
         }
-
-        const link = createLink(topLevelNode, defaultCategory.links.length);
-
-        if (link) {
-          defaultCategory.links.push(link);
-        }
-
         continue;
       }
 
       const category = createCategory(topLevelNode.title || DEFAULT_CATEGORY_NAME);
-
-      for (const childNode of topLevelNode.children ?? []) {
-        if (!childNode.url && childNode.title === ZMARK_BOOKMARKS_FOLDER_TITLE) {
-          continue;
-        }
-
-        collectTopLevelNode(category, childNode);
-      }
-
-      if (category.links.length || category.children.some(child => child.links.length > 0)) {
-        categories.push(category);
-      }
+      processCategoryChildren(category, topLevelNode);
+      tryAddCategory(category);
     }
   }
 
