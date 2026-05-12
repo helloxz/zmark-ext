@@ -591,14 +591,16 @@ onMounted(() => {
             <div v-if="isExpanded(category.id)" class="border-t border-slate-100 bg-slate-50/40 px-3 py-3">
               <div class="space-y-3">
                 <div v-if="category.children.length" class="space-y-2">
-                  <button
+                  <div
                     v-for="child in category.children"
                     :key="child.id"
-                    type="button"
-                    class="w-full cursor-pointer rounded-xl border border-slate-200 bg-white text-left transition-colors"
-                    @click="toggleChildCategory(child.id)"
+                    class="overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors"
                   >
-                    <div class="flex items-center gap-3 px-3 py-2.5">
+                    <button
+                      type="button"
+                      class="flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 text-left"
+                      @click="toggleChildCategory(child.id)"
+                    >
                       <n-icon
                         :component="isChildExpanded(child.id) ? ChevronDownOutline : ChevronForwardOutline"
                         size="14"
@@ -610,7 +612,7 @@ onMounted(() => {
                       <div class="min-w-0 flex-1">
                         <div class="truncate text-sm font-medium text-slate-700">{{ child.name }}</div>
                       </div>
-                    </div>
+                    </button>
 
                     <div v-if="isChildExpanded(child.id)" class="border-t border-slate-100 px-3 py-3">
                       <div v-if="isChildCategoryLinksLoading(child.id)" class="flex items-center justify-center py-4">
@@ -648,7 +650,7 @@ onMounted(() => {
                         该分类下暂无内容
                       </div>
                     </div>
-                  </button>
+                  </div>
                 </div>
 
                 <div v-if="isCategoryLinksLoading(category.id)" class="flex items-center justify-center py-4">
