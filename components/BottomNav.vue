@@ -38,7 +38,7 @@ function navigate(item: NavItem) {
       <li v-for="item in items" :key="item.key">
         <button
           type="button"
-          class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs transition-colors"
+          class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs transition-colors pointer-coarse:py-3 pointer-coarse:text-sm"
           :class="currentRouteName === item.key ? 'bg-sky-50 text-sky-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'"
           @click="navigate(item)"
         >

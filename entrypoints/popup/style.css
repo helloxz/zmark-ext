@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant pointer-coarse (@media (pointer: coarse) and (hover: none));
+
 /* Keep scrollbars slim and soft so they match the popup's light blue accents. */
 * {
   scrollbar-width: thin;
