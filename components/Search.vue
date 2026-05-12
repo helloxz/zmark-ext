@@ -16,7 +16,16 @@ const hasSearched = ref(false);
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 let activeController: AbortController | null = null;
+const inputRef = ref<HTMLInputElement | null>(null);
 const rootRef = ref<HTMLElement | null>(null);
+
+function focus() {
+  nextTick(() => {
+    inputRef.value?.focus();
+  });
+}
+
+defineExpose({ focus });
 
 const trimmedKeyword = computed(() => keyword.value.trim());
 const isPanelVisible = ref(false);
@@ -140,6 +149,7 @@ onBeforeUnmount(() => {
 <template>
   <div ref="rootRef" class="relative z-50 isolate">
     <n-input
+      ref="inputRef"
       v-model:value="keyword"
       clearable
       placeholder="输入书签关键词进行搜索"
@@ -178,7 +188,7 @@ onBeforeUnmount(() => {
           v-for="link in results"
           :key="link.id"
           type="button"
-          class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-emerald-50/70"
+          class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-sky-50/70"
           @click="openLink(link.url)"
         >
           <img :src="getFaviconUrl(link.url)" :alt="link.title" class="h-4 w-4 shrink-0 rounded-sm" loading="lazy">

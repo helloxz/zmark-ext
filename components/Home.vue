@@ -23,6 +23,8 @@ import { getFaviconUrl, mapLink } from '@/utils/links';
 import { baseUrlStorage, categoryTreeStorage, tokenStorage } from '@/utils/storage';
 import { useRouter } from 'vue-router';
 
+const searchRef = ref<InstanceType<typeof Search> | null>(null);
+
 const baseToolbarActions = [
   { key: 'open', label: '打开', title: '打开选中', icon: OpenOutline },
   { key: 'refresh', label: '刷新', title: '刷新分类', icon: RefreshOutline },
@@ -492,6 +494,9 @@ onMounted(() => {
   void redirectToSettingsIfConfigMissing();
   void loadSavedBaseUrl();
   void loadCategories();
+  nextTick(() => {
+    searchRef.value?.focus();
+  });
 });
 </script>
 
@@ -521,7 +526,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="mt-3">
-        <Search />
+        <Search ref="searchRef" />
       </div>
     </header>
 
