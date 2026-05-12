@@ -2,7 +2,7 @@
 import BottomNav from '@/components/BottomNav.vue';
 import PopupLayout from '@/components/PopupLayout.vue';
 import PageTitle from '@/components/title.vue';
-import { baseUrlStorage, tokenStorage } from '@/utils/storage';
+import { baseUrlStorage, tokenStorage, categoryTreeStorage } from '@/utils/storage';
 
 interface ApiResponse {
   code: number;
@@ -121,6 +121,7 @@ async function handleSaveConfig() {
     await Promise.all([
       baseUrlStorage.setValue(trimmedBaseUrl),
       tokenStorage.setValue(trimmedToken),
+      categoryTreeStorage.setValue([]),
     ]);
 
     baseUrl.value = trimmedBaseUrl;
