@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Add from '@/components/Add.vue';
+import Edit from '@/components/Edit.vue';
 import Home from '@/components/Home.vue';
 import Settings from '@/components/Settings.vue';
 import Sync from '@/components/Sync.vue';
@@ -16,6 +17,11 @@ const router = createRouter({
       path: '/add',
       name: 'add',
       component: Add,
+    },
+    {
+      path: '/edit/:id',
+      name: 'edit',
+      component: Edit,
     },
     {
       path: '/sync',

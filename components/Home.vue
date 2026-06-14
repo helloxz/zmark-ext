@@ -9,6 +9,7 @@ import {
   FolderOpenOutline,
   GitMergeOutline,
   InformationCircleOutline,
+  PencilOutline,
 } from '@vicons/ionicons5';
 import BottomNav from '@/components/BottomNav.vue';
 import Info from '@/components/info.vue';
@@ -123,6 +124,13 @@ function isLinkSelected(linkId: number) {
 
 function openLink(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function goToEdit(link: BookmarkLink) {
+  router.push({
+    name: 'edit',
+    params: { id: link.id },
+  });
 }
 
 function openHomePage() {
@@ -643,6 +651,17 @@ onMounted(() => {
                           >
                             {{ link.title }}
                           </button>
+                          <n-button
+                            quaternary
+                            circle
+                            size="small"
+                            title="编辑"
+                            @click.stop="goToEdit(link)"
+                          >
+                            <template #icon>
+                              <n-icon :component="PencilOutline" size="14" />
+                            </template>
+                          </n-button>
                         </div>
                       </div>
 
@@ -681,6 +700,17 @@ onMounted(() => {
                     >
                       {{ link.title }}
                     </button>
+                    <n-button
+                      quaternary
+                      circle
+                      size="small"
+                      title="编辑"
+                      @click.stop="goToEdit(link)"
+                    >
+                      <template #icon>
+                        <n-icon :component="PencilOutline" size="14" />
+                      </template>
+                    </n-button>
                   </div>
                 </div>
 

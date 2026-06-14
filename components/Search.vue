@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import { SearchOutline } from '@vicons/ionicons5';
+import { SearchOutline, PencilOutline } from '@vicons/ionicons5';
 import type { BookmarkLink, LinkApiItem } from '@/utils/links';
 import { getFaviconUrl, mapLink } from '@/utils/links';
 import { request } from '@/utils/request';
+import { useRouter } from 'vue-router';
 
 const SEARCH_DELAY_MS = 300;
 const SEARCH_MIN_KEYWORD_LENGTH = 2;
 const SEARCH_MAX_RESULTS = 10;
 
+const router = useRouter();
 const keyword = ref('');
 const results = ref<BookmarkLink[]>([]);
 const isSearching = ref(false);
@@ -34,6 +36,13 @@ const isKeywordLongEnough = computed(() => trimmedKeyword.value.length >= SEARCH
 
 function openLink(url: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function goToEdit(link: BookmarkLink) {
+  router.push({
+    name: 'edit',
+    params: { id: link.id },
+  });
 }
 
 function resetResults() {
@@ -184,16 +193,31 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-else-if="results.length" class="max-h-72 overflow-y-auto px-2 py-2">
-        <button
+        <div
           v-for="link in results"
           :key="link.id"
-          type="button"
-          class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-sky-50/70"
-          @click="openLink(link.url)"
+          class="flex items-center gap-2 rounded-xl px-3 py-2.5 transition-colors hover:bg-sky-50/70"
         >
-          <img :src="getFaviconUrl(link.url)" :alt="link.title" class="h-4 w-4 shrink-0 rounded-sm" loading="lazy">
-          <span class="truncate text-sm font-medium text-slate-800">{{ link.title }}</span>
-        </button>
+          <button
+            type="button"
+            class="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
+            @click="openLink(link.url)"
+          >
+            <img :src="getFaviconUrl(link.url)" :alt="link.title" class="h-4 w-4 shrink-0 rounded-sm" loading="lazy">
+            <span class="truncate text-sm font-medium text-slate-800">{{ link.title }}</span>
+          </button>
+          <n-button
+            quaternary
+            circle
+            size="small"
+            title="编辑"
+            @click.stop="goToEdit(link)"
+          >
+            <template #icon>
+              <n-icon :component="PencilOutline" size="14" />
+            </template>
+          </n-button>
+        </div>
       </div>
 
       <div v-else-if="hasSearched" class="px-4 py-3 text-xs text-slate-500">
