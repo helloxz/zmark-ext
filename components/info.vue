@@ -65,7 +65,7 @@ function closePanel() {
         <div class="flex items-center justify-between gap-3">
           <div>
             <div class="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">Version</div>
-            <div class="mt-1 text-xl font-semibold text-slate-900">1.1.0</div>
+            <div class="mt-1 text-xl font-semibold text-slate-900">1.2.0</div>
           </div>
           <n-button strong secondary size="small" type="warning" @click="openExternal('https://dwz.ovh/jtxo')">
             <template #icon>

@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Add from '@/components/Add.vue';
+import AIChat from '@/components/AIChat.vue';
 import Edit from '@/components/Edit.vue';
 import Home from '@/components/Home.vue';
 import Settings from '@/components/Settings.vue';
@@ -17,6 +18,11 @@ const router = createRouter({
       path: '/add',
       name: 'add',
       component: Add,
+    },
+    {
+      path: '/ai',
+      name: 'ai',
+      component: AIChat,
     },
     {
       path: '/edit/:id',

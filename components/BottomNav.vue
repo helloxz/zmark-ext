@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Component } from 'vue';
 import { computed } from 'vue';
-import { BookmarkOutline, AddCircleOutline, SyncOutline, SettingsOutline } from '@vicons/ionicons5';
+import { BookmarkOutline, AddCircleOutline, ChatbubblesOutline, SyncOutline, SettingsOutline } from '@vicons/ionicons5';
 import { useRoute, useRouter } from 'vue-router';
 
 type NavItem = {
@@ -14,6 +14,7 @@ type NavItem = {
 const items: NavItem[] = [
   { key: 'bookmarks', label: '书签', icon: BookmarkOutline, to: '/' },
   { key: 'add', label: '添加', icon: AddCircleOutline, to: '/add' },
+  { key: 'ai', label: 'AI检索', icon: ChatbubblesOutline, to: '/ai' },
   { key: 'sync', label: '同步', icon: SyncOutline, to: '/sync' },
   { key: 'settings', label: '设置', icon: SettingsOutline, to: '/settings' },
 ];
@@ -34,7 +35,7 @@ function navigate(item: NavItem) {
 
 <template>
   <nav class="border-t border-slate-200 bg-white px-2 py-1 shadow-[0_-4px_12px_rgba(15,23,42,0.04)]">
-    <ul class="grid grid-cols-4 gap-1">
+    <ul class="grid grid-cols-5 gap-1">
       <li v-for="item in items" :key="item.key">
         <button
           type="button"
